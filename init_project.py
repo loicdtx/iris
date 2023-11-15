@@ -86,3 +86,4 @@ with app.app_context():
     db.session.commit()
 
 register_extensions(app)
+create_default_admin(app)
