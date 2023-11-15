@@ -1,4 +1,6 @@
 import os
+
+import flask
 from dotenv import load_dotenv, find_dotenv
 
 from iris.project import project
