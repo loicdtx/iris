@@ -371,15 +371,13 @@ class Project:
             if 'vmin' in view and 'vmax' in view:
                 linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0, 1)
             elif 'vmin' in view:
-                linear_scale = lambda z, vmin, vmax=None: np.clip((z - vmin)/(z.max()-vmin), 0, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(z.max()-vmin), 0, 1)
             elif 'vmax' in view:
-                linear_scale = lambda z, vmax, min=None: np.clip((z - z.min())/(vmax-z.min()), 0, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - z.min())/(vmax-z.min()), 0, 1)
         else:
             linear_scale = lambda z, vmin=None, vmax=None: (z - z.min())/(z.max()-z.min())
-        rgb_bands = list(map(linear_scale,
-                             z=rgb_bands,
-                             vmin=view.get('vmin', None),
-                             vmax=view.get('vmax', None)))
+        rgb_bands = list(map(linear_scale, rgb_bands, view.get('vmin', None),
+                             view.get('vmax', None)))
 
         if len(rgb_bands) == 1:
             rgb_bands = cm.get_cmap(view['cmap'])(rgb_bands)[..., :3]
