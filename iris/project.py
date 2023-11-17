@@ -362,21 +362,24 @@ class Project:
             if 'vmin' in view or 'vmax' in view:
                 raise ValueError("Cannot specify both 'clip' and 'vmin'/'vmax' in view")
             clip = float(view['clip'])
-            linear_scale = lambda z: np.clip(
+            linear_scale = lambda z, vmin=None, vmax=None: np.clip(
                 (z - np.percentile(z,clip))/(np.percentile(z,100-clip)-np.percentile(z,clip)),
                 0,
                 1
                 )
         elif 'vmin' in view or 'vmax' in view:
             if 'vmin' in view and 'vmax' in view:
-                linear_scale = lambda z: np.clip((z - view['vmin'])/(view['vmax']-view['vmin']), 0, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0, 1)
             elif 'vmin' in view:
-                linear_scale = lambda z: np.clip((z - view['vmin'])/(z.max()-view['vmin']), 0, 1)
+                linear_scale = lambda z, vmin, vmax=None: np.clip((z - vmin)/(z.max()-vmin), 0, 1)
             elif 'vmax' in view:
-                linear_scale = lambda z: np.clip((z - z.min())/(view['vmax']-z.min()), 0, 1)
+                linear_scale = lambda z, vmax, min=None: np.clip((z - z.min())/(vmax-z.min()), 0, 1)
         else:
-            linear_scale = lambda z: (z - z.min())/(z.max()-z.min())
-        rgb_bands = list(map(linear_scale, rgb_bands))
+            linear_scale = lambda z, vmin=None, vmax=None: (z - z.min())/(z.max()-z.min())
+        rgb_bands = list(map(linear_scale,
+                             z=rgb_bands,
+                             vmin=view.get('vmin', None),
+                             vmax=view.get('vmax', None)))
 
         if len(rgb_bands) == 1:
             rgb_bands = cm.get_cmap(view['cmap'])(rgb_bands)[..., :3]
