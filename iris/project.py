@@ -8,6 +8,7 @@ import os
 from os.path import basename, dirname, exists, getmtime, isabs, join, normpath
 from pprint import pprint
 import re
+import itertools
 
 import flask
 import json
@@ -376,8 +377,8 @@ class Project:
                 linear_scale = lambda z, vmin, vmax: np.clip((z - z.min())/(vmax-z.min()), 0, 1)
         else:
             linear_scale = lambda z, vmin=None, vmax=None: (z - z.min())/(z.max()-z.min())
-        rgb_bands = list(map(linear_scale, rgb_bands, view.get('vmin', None),
-                             view.get('vmax', None)))
+        rgb_bands = list(map(linear_scale, rgb_bands, view.get('vmin', itertools.cycle([None])),
+                             view.get('vmax', itertools.cycle([None]))))
 
         if len(rgb_bands) == 1:
             rgb_bands = cm.get_cmap(view['cmap'])(rgb_bands)[..., :3]
