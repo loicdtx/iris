@@ -356,7 +356,7 @@ class Project:
                 band = np.repeat(band, image_size)
                 band = band.reshape(*project['images']['shape'])
 
-            rgb_bands[i] = band
+            rgb_bands[i] = band.astype(np.float32)
 
         # Stretch between 0->1, with percentile clip if specified in view
         if 'clip' in view:
@@ -370,11 +370,11 @@ class Project:
                 )
         elif 'vmin' in view or 'vmax' in view:
             if 'vmin' in view and 'vmax' in view:
-                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0.02, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0, 1)
             elif 'vmin' in view:
-                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(z.max()-vmin), 0.02, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(z.max()-vmin), 0, 1)
             elif 'vmax' in view:
-                linear_scale = lambda z, vmin, vmax: np.clip((z - z.min())/(vmax-z.min()), 0.02, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - z.min())/(vmax-z.min()), 0, 1)
         else:
             linear_scale = lambda z, vmin=None, vmax=None: (z - z.min())/(z.max()-z.min())
         rgb_bands = list(map(linear_scale, rgb_bands, view.get('vmin', itertools.cycle([None])),
