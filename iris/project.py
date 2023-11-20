@@ -370,7 +370,7 @@ class Project:
                 )
         elif 'vmin' in view or 'vmax' in view:
             if 'vmin' in view and 'vmax' in view:
-                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0, 1)
+                linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(vmax-vmin), 0.01, 0.99)
             elif 'vmin' in view:
                 linear_scale = lambda z, vmin, vmax: np.clip((z - vmin)/(z.max()-vmin), 0, 1)
             elif 'vmax' in view:
